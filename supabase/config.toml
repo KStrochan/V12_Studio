@@ -1,0 +1,13 @@
+# Minimal Supabase CLI config. Used by `supabase link` / `supabase db push`.
+project_id = "v12-service"
+
+[api]
+enabled = true
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+# The owner account is created by scripts/create-owner.ts; nobody signs up publicly.
+enable_signup = false
