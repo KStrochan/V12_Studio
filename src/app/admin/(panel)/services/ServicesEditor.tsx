@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { btnPrimaryCls, fieldCls } from '@/components/admin/AdminDialog'
 import { alertCls, sendJson } from '@/components/admin/send'
-import { ICON_NAMES } from '@/lib/admin-schemas'
+import { serviceIcons } from '@/components/icons/ServiceIcons'
 
 export type ServiceRow = {
   id: string | null
@@ -15,6 +15,17 @@ export type ServiceRow = {
   icon: string
   sort_order: number
   active: boolean
+}
+
+const ICON_LABELS: Record<string, string> = {
+  scan: 'Діагностика',
+  suspension: 'Ходова',
+  oil: 'ТО (масло)',
+  engine: 'Двигун',
+  bolt: 'Електрика',
+  brake: 'Гальма',
+  body: 'Кузов',
+  tire: 'Шиномонтаж',
 }
 
 const labelCls = 'block space-y-1 text-sm text-muted'
@@ -85,9 +96,10 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
         <label className={labelCls}>
           Іконка
           <select className={fieldCls} value={f.icon} onChange={(e) => set('icon', e.target.value)}>
-            {ICON_NAMES.map((n) => (
+            {!(f.icon in serviceIcons) ? <option value={f.icon}>{f.icon} (за замовчуванням)</option> : null}
+            {Object.keys(serviceIcons).map((n) => (
               <option key={n} value={n}>
-                {n}
+                {ICON_LABELS[n] ?? n}
               </option>
             ))}
           </select>
@@ -116,7 +128,7 @@ export function ServicesEditor({ services }: { services: ServiceRow[] }) {
     description: '',
     price_from: 0,
     duration_min: 60,
-    icon: 'wrench',
+    icon: 'scan',
     sort_order: (services.reduce((m, s) => Math.max(m, s.sort_order), 0) || 0) + 10,
     active: true,
   }
