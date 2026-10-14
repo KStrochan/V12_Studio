@@ -65,6 +65,7 @@ export function BookingCard({
         </a>
         {b.car ? ` · ${b.car}` : ''}
       </p>
+      {b.carYear ? <p className="text-sm text-muted">Рік: {b.carYear}</p> : null}
       {b.comment ? <p className="mt-1 text-sm text-muted">{b.comment}</p> : null}
       {pending ? <p className="mt-1 text-xs text-muted md:hidden">Свайп вправо підтвердити, вліво відхилити</p> : null}
 

@@ -12,6 +12,7 @@ type Visit = {
   status: BookingStatus
   car_make: string | null
   car_model: string | null
+  car_year: number | null
   services: { title: string } | null
 }
 
@@ -24,7 +25,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     supabase.from('clients').select('id,name,phone,car,notes').eq('id', id).maybeSingle(),
     supabase
       .from('bookings')
-      .select('id,start_at,status,car_make,car_model,services(title)')
+      .select('id,start_at,status,car_make,car_model,car_year,services(title)')
       .eq('client_id', id)
       .order('start_at', { ascending: false })
       .limit(200)
@@ -73,6 +74,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 {v.car_make || v.car_model ? (
                   <p className="text-sm text-muted">{[v.car_make, v.car_model].filter(Boolean).join(' ')}</p>
                 ) : null}
+                {v.car_year ? <p className="text-sm text-muted">Рік: {v.car_year}</p> : null}
               </li>
             ))}
           </ul>

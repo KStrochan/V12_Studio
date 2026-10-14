@@ -28,6 +28,7 @@ export async function createDb(opts: { seed?: boolean } = {}): Promise<PGlite> {
   await db.exec(readFileSync(path.join(root, "migrations/0004_booking_tx_keep_client.sql"), "utf8"));
   await db.exec(readFileSync(path.join(root, "migrations/0005_admin_booking_tx.sql"), "utf8"));
   await db.exec(readFileSync(path.join(root, "migrations/0006_hardening.sql"), "utf8"));
+  await db.exec(readFileSync(path.join(root, "migrations/0007_car_year.sql"), "utf8"));
   if (opts.seed) await db.exec(readFileSync(path.join(root, "seed.sql"), "utf8"));
   return db;
 }

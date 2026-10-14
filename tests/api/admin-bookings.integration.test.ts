@@ -67,8 +67,8 @@ function pgDeps(db: PGlite): AdminBookingDeps {
       return r.rows.length > 0;
     },
     async createManual(a) {
-      const r = await q<{ id: string }>("select admin_create_booking_tx($1,$2,$3,$4,$5,$6,$7,$8,$9) as id", [
-        a.serviceId, a.start, a.end, a.postNo, a.name, a.phone, a.carMake, a.carModel, a.comment,
+      const r = await q<{ id: string }>("select admin_create_booking_tx($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) as id", [
+        a.serviceId, a.start, a.end, a.postNo, a.name, a.phone, a.carMake, a.carModel, a.comment, a.carYear,
       ]);
       return r.rows[0].id;
     },
@@ -204,6 +204,15 @@ describe("PATCH reschedule", () => {
 });
 
 describe("POST manual booking", () => {
+  it("car year is optional: stored when given, null otherwise, validated when present", async () => {
+    expect((await handleManualBookingPost(manual({ carYear: 2012 }), pgDeps(db))).status).toBe(201);
+    expect((await db.query("select car_year from bookings")).rows).toEqual([{ car_year: 2012 }]);
+    await db.exec("delete from bookings");
+    expect((await handleManualBookingPost(manual(), pgDeps(db))).status).toBe(201);
+    expect((await db.query("select car_year from bookings")).rows).toEqual([{ car_year: null }]);
+    expect((await handleManualBookingPost(manual({ carYear: 1800, start: T12 }), pgDeps(db))).status).toBe(422);
+  });
+
   it("creates a confirmed manual booking with a normalized phone and client", async () => {
     const r = await handleManualBookingPost(manual(), pgDeps(db));
     expect(r.status).toBe(201);

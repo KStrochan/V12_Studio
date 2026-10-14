@@ -16,7 +16,7 @@ import { useSlots, type Slot } from './useSlots'
 type WorkingHours = Record<string, { open: string; close: string } | null>
 
 const TITLES = ['Оберіть послугу', 'Дата й час', 'Ваші контакти']
-const EMPTY: Contacts = { name: '', phone: '', carMake: '', carModel: '', comment: '' }
+const EMPTY: Contacts = { name: '', phone: '', carMake: '', carModel: '', carYear: '', comment: '' }
 
 const btnPrimary =
   'inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-[image:var(--chrome)] px-7 text-sm font-semibold text-black disabled:opacity-40 lg:flex-none'
@@ -115,6 +115,7 @@ export function BookingWizard({ services, workingHours }: { services: SiteServic
     if (!normalizeUaPhone(contacts.phone)) e.phone = 'Невірний номер телефону'
     if (!contacts.carMake.trim()) e.carMake = 'Вкажіть марку авто'
     if (!contacts.carModel.trim()) e.carModel = 'Вкажіть модель авто'
+    if (!contacts.carYear) e.carYear = 'Вкажіть рік випуску авто'
     return e
   }
 
@@ -140,6 +141,7 @@ export function BookingWizard({ services, workingHours }: { services: SiteServic
           phone: contacts.phone,
           carMake: contacts.carMake.trim(),
           carModel: contacts.carModel.trim(),
+          carYear: Number(contacts.carYear),
           comment: contacts.comment.trim() || undefined,
           website: honey || undefined,
         }),
@@ -188,7 +190,7 @@ export function BookingWizard({ services, workingHours }: { services: SiteServic
   }
 
   const canNext = step === 0 ? !!service : step === 1 ? !!slot : true
-  const car = [contacts.carMake.trim(), contacts.carModel.trim()].filter(Boolean).join(' ')
+  const car = [contacts.carMake.trim(), contacts.carModel.trim(), contacts.carYear].filter(Boolean).join(' ')
   const variants = reduce
     ? { initial: {}, animate: {}, exit: {} }
     : { initial: { opacity: 0, x: 16 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -16 } }

@@ -42,8 +42,8 @@ function pgDeps(db: PGlite): BookingDeps {
     },
     async createBookingTx(a) {
       const r = await db.query<{ id: string }>(
-        "select create_booking_tx($1,$2,$3,$4,$5,$6,$7,$8,$9) as id",
-        [a.serviceId, a.start, a.end, a.postNo, a.name, a.phone, a.carMake, a.carModel, a.comment],
+        "select create_booking_tx($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) as id",
+        [a.serviceId, a.start, a.end, a.postNo, a.name, a.phone, a.carMake, a.carModel, a.comment, a.carYear],
       );
       return r.rows[0].id;
     },
@@ -68,6 +68,7 @@ const body = (over: Record<string, unknown> = {}) => ({
   phone: "050 111 22 33",
   carMake: "Audi",
   carModel: "A4",
+  carYear: 2015,
   ...over,
 });
 
@@ -181,6 +182,32 @@ describe("POST /api/bookings handler on a real schema", () => {
   });
 });
 
+describe("car_year", () => {
+  it("is stored by create_booking_tx", async () => {
+    const r = await handleBookingPost(body(), "1.1.1.1", pgDeps(db));
+    expect(r.status).toBe(201);
+    expect((await db.query("select car_year from bookings")).rows).toEqual([{ car_year: 2015 }]);
+  });
+  it("API rejects a missing or out-of-range year", async () => {
+    const { carYear: _omit, ...noYear } = body() as Record<string, unknown>;
+    void _omit;
+    expect((await handleBookingPost(noYear, "1.1.1.1", pgDeps(db))).status).toBe(422);
+    expect((await handleBookingPost(body({ carYear: 1800 }), "1.1.1.1", pgDeps(db))).status).toBe(422);
+    expect((await db.query("select 1 from bookings")).rows).toHaveLength(0);
+  });
+  it("DB check rejects 1800 and 2101 but allows null", async () => {
+    const ins = (y: number | null, post = 1) =>
+      db.query(
+        "insert into bookings (service_id, start_at, end_at, post_no, car_year) values ($1, now(), now() + interval '1 hour', $3, $2)",
+        [serviceId, y, post],
+      );
+    await expect(ins(1800)).rejects.toThrow(/car_year|check/i);
+    await expect(ins(2101)).rejects.toThrow(/car_year|check/i);
+    await ins(null);
+    await ins(2015, 2);
+  });
+});
+
 describe("function privileges", () => {
   it("anon cannot call hit_rate_limit or create_booking_tx", async () => {
     await expect(as(db, "anon", () => db.query("select hit_rate_limit('k', 5, 60)"))).rejects.toThrow();
@@ -189,6 +216,34 @@ describe("function privileges", () => {
         db.query("select create_booking_tx($1, now(), now() + interval '1 hour', 1, 'a', '+380501112233', 'x', 'y', null)", [serviceId]),
       ),
     ).rejects.toThrow();
+  });
+  it("anon and authenticated cannot call the new 10-arg create_booking_tx or admin_create_booking_tx", async () => {
+    for (const who of ["anon", "authenticated"] as const) {
+      await expect(
+        as(db, who, () =>
+          db.query("select create_booking_tx($1, now(), now() + interval '1 hour', 1, 'a', '+380501112233', 'x', 'y', null, 2015)", [serviceId]),
+        ),
+      ).rejects.toThrow(/permission denied/);
+    }
+    await expect(
+      as(db, "anon", () =>
+        db.query("select admin_create_booking_tx($1, now(), now() + interval '1 hour', 1, 'a', '+380501112233', 'x', 'y', null, 2015)", [serviceId]),
+      ),
+    ).rejects.toThrow(/permission denied/);
+    expect((await db.query("select 1 from bookings")).rows).toHaveLength(0);
+  });
+  it("old 9-arg signatures are gone and service_role can call the new one", async () => {
+    const n = await db.query<{ c: number }>(
+      "select count(*)::int as c from pg_proc where proname in ('create_booking_tx','admin_create_booking_tx')",
+    );
+    expect(n.rows[0].c).toBe(2);
+    await db.exec("set role service_role");
+    const r = await db.query<{ id: string }>(
+      "select create_booking_tx($1, now(), now() + interval '1 hour', 1, 'a', '+380501112233', 'x', 'y', null, 2015) as id",
+      [serviceId],
+    );
+    await db.exec("reset role");
+    expect(r.rows[0].id).toBeTruthy();
   });
   it("service_role can call hit_rate_limit", async () => {
     await db.exec("set role service_role");
