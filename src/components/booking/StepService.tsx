@@ -4,8 +4,6 @@ import type { SiteService } from '@/lib/content'
 import { cn } from '@/lib/cn'
 import { radioKeyDown } from './radio'
 
-const money = new Intl.NumberFormat('uk-UA')
-
 export function StepService({ services, value, onSelect }: { services: SiteService[]; value?: string; onSelect: (s: SiteService) => void }) {
   const tabStop = services.some((s) => s.id === value) ? value : services[0]?.id
   return (
@@ -26,9 +24,7 @@ export function StepService({ services, value, onSelect }: { services: SiteServi
             )}
           >
             <span className="font-heading text-sm font-semibold uppercase tracking-wider">{s.title}</span>
-            <span className="mt-1 text-sm text-muted">
-              від {money.format(s.price_from)} грн · ≈ {s.duration_min} хв
-            </span>
+            <span className="mt-1 text-sm text-muted">≈ {s.duration_min} хв</span>
           </button>
         )
       })}

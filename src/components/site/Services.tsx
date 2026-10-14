@@ -13,8 +13,6 @@ const ICONS: Record<string, string> = {
   tire: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
 }
 
-const money = new Intl.NumberFormat('uk-UA')
-
 export function Services({ services }: { services: SiteService[] }) {
   return (
     <section id="services" className="scroll-mt-20 px-4 py-20 sm:px-6 lg:py-28">
@@ -22,7 +20,6 @@ export function Services({ services }: { services: SiteService[] }) {
         <SectionHeading
           eyebrow="Послуги"
           title="Усе для вашого авто"
-          lead="Фінальну вартість називаємо після діагностики, до початку робіт."
         />
         {services.length === 0 ? (
           <p className="mt-12 text-muted">Послуги скоро з’являться.</p>
@@ -40,9 +37,6 @@ export function Services({ services }: { services: SiteService[] }) {
                 </svg>
                 <h3 className="mt-5 font-heading text-sm font-semibold uppercase tracking-wider">{s.title}</h3>
                 <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{s.description}</p>
-                <p className="mt-6 text-sm text-white/60">
-                  від <span className="chrome-text font-heading text-lg font-semibold">{money.format(s.price_from)}</span> грн
-                </p>
               </article>
             </Reveal>
           ))}

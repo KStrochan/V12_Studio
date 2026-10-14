@@ -24,7 +24,6 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
   const isNew = initial.id === null
   const [f, setF] = useState({
     ...initial,
-    price_from: String(initial.price_from),
     duration_min: String(initial.duration_min),
     sort_order: String(initial.sort_order),
   })
@@ -44,7 +43,6 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
     const payload = {
       title: f.title,
       description: f.description,
-      price_from: num(f.price_from),
       duration_min: num(f.duration_min),
       icon: f.icon,
       sort_order: num(f.sort_order),
@@ -76,10 +74,6 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
         <textarea className={`${fieldCls} py-2`} rows={3} maxLength={500} value={f.description} onChange={(e) => set('description', e.target.value)} />
       </label>
       <div className="grid grid-cols-2 gap-3">
-        <label className={labelCls}>
-          Ціна від, грн
-          <input className={fieldCls} type="number" inputMode="numeric" min={0} step={1} value={f.price_from} onChange={(e) => set('price_from', e.target.value)} />
-        </label>
         <label className={labelCls}>
           Тривалість, хв
           <input className={fieldCls} type="number" inputMode="numeric" min={5} step={5} value={f.duration_min} onChange={(e) => set('duration_min', e.target.value)} />

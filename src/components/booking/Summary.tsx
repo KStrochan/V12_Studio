@@ -1,7 +1,6 @@
 import type { SiteService } from '@/lib/content'
 import { formatTime } from './dates'
 
-const money = new Intl.NumberFormat('uk-UA')
 const dateFmt = new Intl.DateTimeFormat('uk-UA', { timeZone: 'Europe/Kyiv', weekday: 'long', day: 'numeric', month: 'long' })
 
 export function Summary({ service, slot, car }: { service?: SiteService; slot?: string; car?: string }) {
@@ -22,12 +21,6 @@ export function Summary({ service, slot, car }: { service?: SiteService; slot?: 
           </div>
         ))}
       </dl>
-      {service && (
-        <p className="mt-6 border-t border-line pt-4 text-sm text-white/60">
-          від <span className="chrome-text font-heading text-lg font-semibold">{money.format(service.price_from)}</span> грн
-          <span className="block text-xs">Остаточну вартість називаємо після діагностики.</span>
-        </p>
-      )}
     </aside>
   )
 }
