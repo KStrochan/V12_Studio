@@ -3,11 +3,16 @@ import { Reveal } from './Reveal'
 import { SectionHeading } from './SectionHeading'
 
 export function Reviews({ reviews }: { reviews: SiteReview[] }) {
-  if (reviews.length === 0) return null
   return (
     <section id="reviews" className="scroll-mt-20 border-t border-line px-4 py-20 sm:px-6 lg:py-28">
       <div className="mx-auto max-w-6xl">
         <SectionHeading eyebrow="Відгуки" title="Що кажуть клієнти" />
+        {reviews.length === 0 ? (
+          <div data-testid="reviews-empty" className="chrome-border mt-12 rounded-2xl px-6 py-12 text-center">
+            <p className="text-lg tracking-widest text-white/20" aria-hidden="true">★★★★★</p>
+            <p className="mt-4 font-heading text-sm font-semibold uppercase tracking-wider">Скоро тут з’являться відгуки наших клієнтів</p>
+          </div>
+        ) : (
         <ul className="mt-12 grid gap-4 md:grid-cols-3">
           {reviews.map((r, i) => (
             <Reveal as="li" key={r.id} delay={(i % 3) * 0.1} className="flex flex-col rounded-2xl border border-line bg-panel p-6">
@@ -20,6 +25,7 @@ export function Reviews({ reviews }: { reviews: SiteReview[] }) {
             </Reveal>
           ))}
         </ul>
+        )}
       </div>
     </section>
   )
