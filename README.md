@@ -52,7 +52,7 @@ npm run dev                  # http://localhost:3000
    supabase login
    supabase link --project-ref <project-ref>
    ```
-3. Порядок: link → db push → seed → create-owner. Застосуйте міграції (по порядку `0001` → `0006`):
+3. Порядок: link → db push → seed → create-owner. Застосуйте міграції (по порядку `0001` → `0007`):
    ```bash
    supabase db push
    ```
@@ -61,6 +61,7 @@ npm run dev                  # http://localhost:3000
    - `0003_create_booking_tx.sql`, `0004_booking_tx_keep_client.sql`: транзакційне створення запису
    - `0005_admin_booking_tx.sql`: зміни записів із адмінки
    - `0006_hardening.sql`: причина вихідного дня недоступна анонімам (публічне представлення `days_off_public`), безпечний `search_path` і очищення `rate_limits`
+   - `0007_car_year.sql`: додає `bookings.car_year`, перестворює `create_booking_tx` і `admin_create_booking_tx` із параметром `car_year` (ті самі права доступу)
 4. Заповніть початкові дані: виконайте вміст `supabase/seed.sql` у SQL Editor Supabase (налаштування, послуги, відгуки). Телефон і адреса в сиді порожні, а приклади відгуків приховані (`visible = false`): заповніть їх в адмінці перед запуском.
 5. Скопіюйте URL, anon-ключ і service-role ключ (Project Settings → API) у `.env.local`.
 6. Створіть акаунт власника:
@@ -92,7 +93,8 @@ npm run dev                  # http://localhost:3000
 
 ## Контрольний список запуску
 
-1. Застосувати міграції `0001`–`0006` (`supabase db push`).
+1. Застосувати міграції `0001`–`0007` (`supabase db push`).
+   > **УВАГА: міграцію `0007` ОБОВ’ЯЗКОВО застосувати ДО деплою цієї версії, інакше публічні й адмінські записи не створюватимуться.**
 2. Виконати `supabase/seed.sql`.
 3. Створити власника: `npx tsx scripts/create-owner.ts <email> "<пароль>"`.
 4. Задати змінні середовища у Vercel, зокрема `NEXT_PUBLIC_SITE_URL` (без неї sitemap, посилання на sitemap у robots.txt і `url` у JSON-LD у production не публікуються).
@@ -124,6 +126,8 @@ npm run dev                  # http://localhost:3000
 - Не комітьте `.env.local`.
 
 ## Відомі обмеження
+
+- Ціни навмисно не показуються на публічному сайті: `price_from` не вибирається публічним запитом і не потрапляє в браузер (колонка в БД і адмінка лишаються).
 
 - Якщо змінні Supabase задані, але БД не мігрована чи не заповнена сидом, майстер запису показує резервні послуги, а створення запису завершується помилкою. Спершу застосуйте міграції й сид.
 - **Сценарії з реальним Supabase тут не перевірялись.** Розробка велась на машині без облікових даних Supabase й Docker. SQL (схема, RLS, конкурентні записи, ліміти) перевірено через PGlite; E2E використовують мок API. Тести проти реального стеку (`tests/e2e/spam.spec.ts`, частина `consultation.spec.ts`) пропускаються без `SUPABASE_SERVICE_ROLE_KEY`. Перед запуском у прод пройдіть повний сценарій вручну: запис, сповіщення в Telegram, підтвердження, вхід в адмінку.

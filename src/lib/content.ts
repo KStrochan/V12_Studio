@@ -21,7 +21,7 @@ export async function getSiteContent(): Promise<SiteContent> {
     const db = createPublicClient()
     const [s, sv, rv] = await Promise.all([
       db.from('settings').select('phone,address,socials,working_hours').limit(1).maybeSingle(),
-      db.from('services').select('id,title,description,price_from,duration_min,icon').order('sort_order'),
+      db.from('services').select('id,title,description,duration_min,icon').order('sort_order'),
       db.from('reviews').select('id,author,body,rating').order('created_at', { ascending: false }).limit(12),
     ])
     return assembleContent(s, sv, rv)
