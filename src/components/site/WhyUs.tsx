@@ -3,8 +3,6 @@ import { Reveal } from './Reveal'
 import { SectionHeading } from './SectionHeading'
 
 const POINTS = [
-  { t: 'Пояснюємо кожну деталь', d: 'Показуємо старі деталі й розповідаємо, що саме й чому змінюємо.' },
-  { t: 'Ціна до початку робіт', d: 'Жодних сюрпризів: погоджуємо вартість до того, як візьмемо інструмент.' },
   { t: 'Гарантія на роботи', d: 'Відповідаємо за результат і не ховаємося після оплати.' },
 ]
 
@@ -31,7 +29,7 @@ export function WhyUs() {
             </Reveal>
           ))}
         </dl>
-        <ul className="mt-10 grid gap-4 md:grid-cols-3">
+        <ul className="mt-10 grid gap-4">
           {POINTS.map((p, i) => (
             <Reveal as="li" key={p.t} delay={i * 0.1} className="rounded-2xl border border-line p-6">
               <h3 className="font-heading text-sm font-semibold uppercase tracking-wider">{p.t}</h3>
