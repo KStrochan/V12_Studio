@@ -100,6 +100,42 @@ test('booking wizard: car year is required, listed descending from the current y
   expect(posted).toBe(false)
 })
 
+test('booking wizard: add-to-calendar buttons on the success screen (API mocked)', async ({ page }) => {
+  await mockSlots(page)
+  await page.route('**/api/bookings', (route) => route.fulfill({ status: 201, json: { id: 'b-cal-1' } }))
+  const { section, slotGroup } = await toSlotStep(page)
+  await slotGroup.getByRole('radio').first().click() // 07:00Z
+  await section.getByRole('button', { name: 'Далі' }).click()
+  await fillContacts(page)
+  await section.getByRole('button', { name: 'Надіслати запит' }).click()
+  await expect(page.getByText('Запит надіслано, очікуйте підтвердження')).toBeVisible()
+
+  const google = section.getByRole('link', { name: 'Додати в Google Календар' })
+  const ics = section.getByRole('button', { name: 'Завантажити в календар (.ics)' })
+  await expect(google).toBeVisible()
+  await expect(ics).toBeVisible()
+  expect((await google.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+  expect((await ics.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+
+  await expect(google).toHaveAttribute('target', '_blank')
+  await expect(google).toHaveAttribute('rel', 'noopener noreferrer')
+  const href = new URL((await google.getAttribute('href'))!)
+  expect(href.origin + href.pathname).toBe('https://calendar.google.com/calendar/render')
+  expect(href.searchParams.get('action')).toBe('TEMPLATE')
+  expect(href.searchParams.get('text')).toBe('V12 Service: Діагностика')
+  expect(href.searchParams.get('dates')).toMatch(/^\d{8}T070000Z\/\d{8}T\d{6}Z$/)
+  expect(href.searchParams.get('details')).toContain('Запис очікує підтвердження')
+
+  const [download] = await Promise.all([page.waitForEvent('download'), ics.click()])
+  expect(download.suggestedFilename()).toMatch(/\.ics$/)
+  const path = await download.path()
+  const text = (await import('node:fs')).readFileSync(path, 'utf8')
+  expect(text).toContain('BEGIN:VCALENDAR')
+  expect(text).toContain('UID:b-cal-1@v12-service')
+  expect(text).toContain('DTSTART:')
+  expect(text).toContain('TRIGGER:-PT1H')
+})
+
 test('booking wizard: 409 shows conflict and fresh slots (API mocked)', async ({ page }) => {
   await mockSlots(page)
   await page.route('**/api/bookings', async (route) => {

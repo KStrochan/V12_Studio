@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { SiteService } from '@/lib/content'
 import { normalizeUaPhone } from '@/lib/phone'
+import { buildCalendarEvent, buildIcs, googleCalendarUrl, type CalendarEvent } from '@/lib/calendar'
 import { SectionHeading } from '@/components/site/SectionHeading'
 import { StepService } from './StepService'
 import { StepSlot } from './StepSlot'
@@ -29,10 +30,33 @@ function focusFirstInvalid() {
 }
 
 
-export function BookingWizard({ services, workingHours }: { services: SiteService[]; workingHours: WorkingHours }) {
+function downloadIcs(ev: CalendarEvent) {
+  const blob = new Blob([buildIcs(ev)], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'v12-service-zapys.ics'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+export function BookingWizard({
+  services,
+  workingHours,
+  address,
+  phone,
+}: {
+  services: SiteService[]
+  workingHours: WorkingHours
+  address?: string
+  phone?: string
+}) {
   const reduce = useReducedMotion()
   const [step, setStep] = useState(0)
   const [done, setDone] = useState(false)
+  const [calendarEvent, setCalendarEvent] = useState<CalendarEvent>()
   const [service, setService] = useState<SiteService>()
   const [days, setDays] = useState<Day[]>([])
   const [date, setDate] = useState<string>()
@@ -147,6 +171,17 @@ export function BookingWizard({ services, workingHours }: { services: SiteServic
         }),
       })
       if (res.status === 201) {
+        const data = (await res.json().catch(() => ({}))) as { id?: unknown }
+        setCalendarEvent(
+          buildCalendarEvent({
+            bookingId: typeof data.id === 'string' ? data.id : crypto.randomUUID(),
+            serviceName: service.title,
+            startIso: slot,
+            durationMin: service.duration_min,
+            address,
+            phone,
+          }),
+        )
         setStatus('')
         setDone(true)
       } else if (res.status === 409) {
@@ -178,6 +213,7 @@ export function BookingWizard({ services, workingHours }: { services: SiteServic
 
   function reset() {
     setDone(false)
+    setCalendarEvent(undefined)
     setStep(0)
     setService(undefined)
     setDate(undefined)
@@ -206,6 +242,21 @@ export function BookingWizard({ services, workingHours }: { services: SiteServic
               <div ref={doneRef} tabIndex={-1} role="status" className="py-10 text-center outline-none">
                 <p className="chrome-text font-heading text-xl font-semibold uppercase tracking-wider">Запит надіслано, очікуйте підтвердження</p>
                 <p className="mt-3 text-sm text-muted">Ми зателефонуємо, щоб підтвердити час запису.</p>
+                {calendarEvent && (
+                  <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
+                    <a
+                      href={googleCalendarUrl(calendarEvent)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={btnGhost}
+                    >
+                      Додати в Google Календар
+                    </a>
+                    <button type="button" onClick={() => downloadIcs(calendarEvent)} className={btnGhost}>
+                      Завантажити в календар (.ics)
+                    </button>
+                  </div>
+                )}
                 <button type="button" onClick={reset} className="mt-6 min-h-11 text-sm text-white/70 underline underline-offset-4">
                   Створити ще один запис
                 </button>
