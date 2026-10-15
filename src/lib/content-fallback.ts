@@ -18,11 +18,11 @@ export type SiteContent = { settings: SiteSettings; services: SiteService[]; rev
 
 const day = { open: '09:00', close: '18:00' }
 
-/** Placeholder content used until Supabase credentials are configured. */
+/** Real business contacts with sample services/reviews, used until Supabase credentials are configured. */
 export const FALLBACK_CONTENT: SiteContent = {
   settings: {
-    phone: '+380 XX XXX XX XX',
-    address: 'м. Стрий, вул. … ',
+    phone: '+380 50 828 08 59',
+    address: 'вулиця Клима Савури, 2б, Стрий, Львівська область, 82404',
     socials: {},
     working_hours: {
       '0': null,

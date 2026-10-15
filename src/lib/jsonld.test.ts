@@ -24,10 +24,22 @@ describe('localBusinessJsonLd', () => {
 
 describe('localBusinessJsonLd placeholders', () => {
   it('omits telephone and streetAddress for placeholder data', () => {
-    const ld = localBusinessJsonLd(FALLBACK_CONTENT.settings) as Record<string, any>
+    const ld = localBusinessJsonLd({ ...FALLBACK_CONTENT.settings, phone: '+380 XX XXX XX XX', address: 'м. Стрий, вул. … ' }) as Record<string, any>
     expect(ld).not.toHaveProperty('telephone')
     expect(ld.address).not.toHaveProperty('streetAddress')
     expect(ld.address.addressLocality).toBe('Стрий')
+  })
+  it('omits telephone and streetAddress for empty strings', () => {
+    const ld = localBusinessJsonLd({ ...FALLBACK_CONTENT.settings, phone: '', address: '' }) as Record<string, any>
+    expect(ld).not.toHaveProperty('telephone')
+    expect(ld.address).not.toHaveProperty('streetAddress')
+  })
+  it('includes real fallback phone, address, geo and hasMap', () => {
+    const ld = localBusinessJsonLd(FALLBACK_CONTENT.settings) as Record<string, any>
+    expect(ld.telephone).toBe('+380508280859')
+    expect(ld.address.streetAddress).toBe('вулиця Клима Савури, 2б, Стрий, Львівська область, 82404')
+    expect(ld.geo).toEqual({ '@type': 'GeoCoordinates', latitude: 49.2666809, longitude: 23.8763218 })
+    expect(ld.hasMap).toBe('https://www.google.com/maps?cid=1261058270261688742')
   })
 })
 
