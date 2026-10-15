@@ -1,3 +1,5 @@
+import Image from 'next/image'
+import { getHeroPhoto } from '@/lib/photos'
 import { CtaLink } from './CtaLink'
 import { GearsBackdrop } from './GearsBackdrop'
 import { ChromeText } from "./ChromeText"
@@ -9,8 +11,25 @@ const FACTS = [
 ]
 
 export function Hero() {
+  const photo = getHeroPhoto()
   return (
     <section id="top" className="relative isolate overflow-hidden px-4 pb-24 pt-28 sm:px-6 lg:pb-32 lg:pt-40">
+      {/* Placeholder stock photo (see docs/PHOTOS.md); decorative backdrop, so empty alt. */}
+      <Image
+        src={photo.src}
+        alt=""
+        fill
+        preload
+        sizes="100vw"
+        quality={60}
+        placeholder={photo.blur ? 'blur' : 'empty'}
+        blurDataURL={photo.blur}
+        className="-z-20 object-cover object-center opacity-45"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgba(10,10,11,0.82)_0%,rgba(10,10,11,0.7)_45%,#0a0a0b_100%)]"
+      />
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_75%_30%,rgba(184,188,196,0.14),transparent_70%),radial-gradient(40%_40%_at_10%_90%,rgba(110,115,125,0.12),transparent_70%)]"
