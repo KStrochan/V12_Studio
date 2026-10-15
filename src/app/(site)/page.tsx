@@ -6,6 +6,7 @@ import { Services } from '@/components/site/Services'
 import { WhyUs } from '@/components/site/WhyUs'
 import { Process } from '@/components/site/Process'
 import { Gallery } from '@/components/site/Gallery'
+import { PhotoBanner } from '@/components/site/PhotoBanner'
 import { BookingWizard } from '@/components/booking/BookingWizard'
 import { ConsultationForm } from '@/components/site/ConsultationForm'
 import { Reviews } from '@/components/site/Reviews'
@@ -25,6 +26,7 @@ export default async function HomePage() {
       <WhyUs />
       <Process />
       <Gallery />
+      <PhotoBanner />
       <BookingWizard services={services} workingHours={settings.working_hours} address={settings.address} phone={settings.phone} />
       <ConsultationForm telegramUrl={telegramUrl} viberUrl={viberUrl} />
       <Reviews reviews={reviews} />
