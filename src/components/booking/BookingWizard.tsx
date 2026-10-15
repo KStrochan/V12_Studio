@@ -20,8 +20,8 @@ const TITLES = ['Оберіть послугу', 'Дата й час', 'Ваші
 const EMPTY: Contacts = { name: '', phone: '', carMake: '', carModel: '', carYear: '', comment: '' }
 
 const btnPrimary =
-  'inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-[image:var(--chrome)] px-7 text-sm font-semibold text-black disabled:opacity-40 lg:flex-none'
-const btnGhost = 'chrome-border inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-semibold hover:bg-panel-2'
+  'inline-flex min-h-12 min-w-0 flex-1 items-center justify-center rounded-full bg-[image:var(--chrome)] px-5 text-center text-sm font-semibold text-black disabled:opacity-40 lg:flex-none'
+const btnGhost = 'chrome-border inline-flex min-h-12 min-w-0 items-center justify-center rounded-full px-5 text-center text-sm font-semibold hover:bg-panel-2'
 
 function focusFirstInvalid() {
   requestAnimationFrame(() =>
@@ -236,8 +236,8 @@ export function BookingWizard({
       <div className="mx-auto max-w-6xl">
         <SectionHeading eyebrow="Онлайн-запис" title="Запис на сервіс" lead="Оберіть послугу та зручний час. Ми підтвердимо запис дзвінком." />
 
-        <div className="mt-10 grid gap-8 pb-24 lg:grid-cols-[1fr_340px] lg:pb-0">
-          <div className="rounded-2xl border border-line bg-panel p-5 sm:p-8">
+        <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-8 pb-24 lg:grid-cols-[minmax(0,1fr)_340px] lg:pb-0">
+          <div data-testid="booking-card" className="min-w-0 rounded-2xl border border-line bg-panel p-5 sm:p-8">
             {done ? (
               <div ref={doneRef} tabIndex={-1} role="status" className="py-10 text-center outline-none">
                 <p className="chrome-text font-heading text-xl font-semibold uppercase tracking-wider">Запит надіслано, очікуйте підтвердження</p>
@@ -317,7 +317,7 @@ export function BookingWizard({
             )}
           </div>
 
-          <div className="hidden lg:block">
+          <div className="hidden min-w-0 lg:block">
             <div className="sticky top-24">
               <Summary service={service} slot={slot} car={car} />
             </div>
