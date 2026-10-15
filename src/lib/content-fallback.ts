@@ -18,11 +18,11 @@ export type SiteContent = { settings: SiteSettings; services: SiteService[]; rev
 
 const day = { open: '09:00', close: '18:00' }
 
-/** Placeholder content used until Supabase credentials are configured. */
+/** Real business contacts with sample services and no reviews, used until Supabase credentials are configured. */
 export const FALLBACK_CONTENT: SiteContent = {
   settings: {
-    phone: '+380 XX XXX XX XX',
-    address: 'м. Стрий, вул. … ',
+    phone: '+380 50 828 08 59',
+    address: 'вулиця Клима Савури, 2б, Стрий, Львівська область, 82404',
     socials: {},
     working_hours: {
       '0': null,
@@ -44,9 +44,5 @@ export const FALLBACK_CONTENT: SiteContent = {
     { id: 'body', title: 'Кузовний ремонт', description: 'Рихтування, зварювання, фарбування та полірування.', duration_min: 480, icon: 'body' },
     { id: 'tires', title: 'Шиномонтаж', description: 'Сезонна заміна, балансування, ремонт проколів.', duration_min: 45, icon: 'tire' },
   ],
-  reviews: [
-    { id: 'r1', author: 'Андрій К.', body: 'Знайшли причину стуку в підвісці, яку не могли знайти в двох інших сервісах. Рекомендую.', rating: 5 },
-    { id: 'r2', author: 'Олег М.', body: 'Записався онлайн на ТО, приїхав у точний час, забрав авто того ж дня. Зручно й без черг.', rating: 5 },
-    { id: 'r3', author: 'Ірина Л.', body: 'Робили гальма та діагностику. Показали старі деталі, дали гарантію. Рекомендую.', rating: 5 },
-  ],
+  reviews: [],
 }
