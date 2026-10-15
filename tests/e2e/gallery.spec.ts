@@ -19,7 +19,8 @@ test('gallery section and lightbox keyboard behaviour', async ({ page }) => {
   expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden')
 
   const caption = dialog.getByTestId('lightbox-caption')
-  const before = await caption.textContent()
+  const before = (await caption.textContent()) as string
+  expect(before).toBeTruthy()
   await page.keyboard.press('ArrowRight')
   await expect(caption).not.toHaveText(before)
   await page.keyboard.press('ArrowLeft')

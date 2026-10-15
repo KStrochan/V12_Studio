@@ -28,7 +28,7 @@ test('wrong password shows a generic Ukrainian error', async ({ page }) => {
   await page.getByLabel('Email').fill('nobody@example.com')
   await page.getByLabel('Пароль').fill('wrong-password')
   await page.getByRole('button', { name: 'Увійти' }).click()
-  await expect(page.getByRole('alert')).toHaveText('Невірний email або пароль')
+  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toHaveText('Невірний email або пароль')
 })
 
 test('owner sees the overview', async ({ page }) => {
@@ -59,5 +59,5 @@ test('owner sees the overview', async ({ page }) => {
 test('login shows a Ukrainian config error when Supabase env is missing', async ({ page }) => {
   test.skip(Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL), 'env is configured')
   await page.goto('/admin/login')
-  await expect(page.getByRole('alert')).toContainText('Авторизація не налаштована')
+  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toContainText('Авторизація не налаштована')
 })
