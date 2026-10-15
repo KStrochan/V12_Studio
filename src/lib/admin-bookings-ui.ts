@@ -12,6 +12,7 @@ export type BookingView = {
   clientName: string
   phone: string
   car: string
+  carYear?: number | null
   comment: string
   source: string
 }

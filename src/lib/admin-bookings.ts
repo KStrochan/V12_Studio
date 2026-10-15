@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { computeSlots, BUSINESS_TZ, type Busy } from './slots'
 import { normalizeUaPhone } from './phone'
-import { bookingInputSchema } from './schemas'
+import { bookingInputSchema, carYearSchema } from './schemas'
 import type { ServiceInfo, SettingsInfo } from './booking-service'
 import { canTransition, BOOKING_STATUSES, type BookingStatus } from './booking-transitions'
 
@@ -22,6 +22,7 @@ export type ManualBookingArgs = {
   phone: string
   carMake: string
   carModel: string
+  carYear: number | null
   comment: string | null
 }
 
@@ -78,6 +79,7 @@ export const manualSchema = bookingInputSchema
   .extend({
     carMake: z.string().trim().max(40, 'Марка занадто довга').default(''),
     carModel: z.string().trim().max(40, 'Модель занадто довга').default(''),
+    carYear: carYearSchema.optional(),
     postNo: postNo.optional(),
   })
 
@@ -217,6 +219,7 @@ export async function handleManualBookingPost(
     phone,
     carMake: input.carMake,
     carModel: input.carModel,
+    carYear: input.carYear ?? null,
     comment: input.comment?.trim() ? input.comment.trim() : null,
   }
   try {

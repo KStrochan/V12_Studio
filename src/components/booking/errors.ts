@@ -1,6 +1,6 @@
 import type { ContactErrors, Contacts } from './StepContacts'
 
-const FIELD_KEYS = ['name', 'phone', 'carMake', 'carModel', 'comment']
+const FIELD_KEYS = ['name', 'phone', 'carMake', 'carModel', 'carYear', 'comment']
 
 /** Keeps field errors and turns errors for keys the form doesn't render into a visible general message. */
 export function normalizeServerErrors(raw: unknown): ContactErrors {

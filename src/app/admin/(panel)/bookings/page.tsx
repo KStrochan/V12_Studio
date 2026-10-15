@@ -11,6 +11,7 @@ type Row = {
   post_no: number
   car_make: string | null
   car_model: string | null
+  car_year: number | null
   comment: string | null
   source: string
   services: { title: string } | null
@@ -26,7 +27,7 @@ export default async function Page() {
     supabase
       .from('bookings')
       .select(
-        'id,status,start_at,end_at,post_no,car_make,car_model,comment,source,services(title),clients(name,phone)',
+        'id,status,start_at,end_at,post_no,car_make,car_model,car_year,comment,source,services(title),clients(name,phone)',
       )
       .gte('start_at', new Date(now - 30 * DAY).toISOString())
       .lt('start_at', new Date(now + 120 * DAY).toISOString())
@@ -56,6 +57,7 @@ export default async function Page() {
     clientName: r.clients?.name ?? '—',
     phone: r.clients?.phone ?? '',
     car: [r.car_make, r.car_model].filter(Boolean).join(' '),
+    carYear: r.car_year,
     comment: r.comment ?? '',
     source: r.source,
   }))

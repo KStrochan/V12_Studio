@@ -90,6 +90,7 @@ export function createAdminBookingDeps(db: SupabaseClient): AdminBookingDeps {
         p_car_make: a.carMake,
         p_car_model: a.carModel,
         p_comment: a.comment,
+        p_car_year: a.carYear,
       })
       return must<string>(r)
     },

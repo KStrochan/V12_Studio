@@ -1,8 +1,9 @@
 'use client'
 
 import type { FormEvent, InputHTMLAttributes } from 'react'
+import { carYearOptions } from '@/lib/car-year'
 
-export type Contacts = { name: string; phone: string; carMake: string; carModel: string; comment: string }
+export type Contacts = { name: string; phone: string; carMake: string; carModel: string; carYear: string; comment: string }
 export type ContactErrors = Partial<Record<keyof Contacts | '_', string>>
 
 const field =
@@ -56,6 +57,25 @@ export function StepContacts({ value, errors, onChange, onSubmit }: Props) {
       <div className="grid gap-5 sm:grid-cols-2">
         {input('carMake', 'Марка авто', { placeholder: 'Напр. BMW', required: true })}
         {input('carModel', 'Модель', { placeholder: 'Напр. X5', required: true })}
+      </div>
+      <div>
+        <label htmlFor="booking-carYear" className="text-sm text-white/80">Рік випуску</label>
+        <select
+          id="booking-carYear"
+          name="carYear"
+          required
+          value={value.carYear}
+          onChange={(e) => onChange({ carYear: e.target.value })}
+          className={`${field} appearance-auto`}
+          aria-invalid={!!errors.carYear}
+          aria-describedby={err('carYear')}
+        >
+          <option value="">Оберіть рік</option>
+          {carYearOptions().map((y) => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+        {errors.carYear && <p id="booking-carYear-err" role="alert" className="mt-1.5 text-sm text-red-400">{errors.carYear}</p>}
       </div>
       <div>
         <label htmlFor="booking-comment" className="text-sm text-white/80">Коментар (необов&apos;язково)</label>

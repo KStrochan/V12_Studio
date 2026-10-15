@@ -38,6 +38,7 @@ async function fillContacts(page: Page) {
   await form.getByLabel('Телефон').fill('098 123 45 67')
   await form.getByLabel('Марка авто').fill('BMW')
   await form.getByLabel('Модель').fill('X5')
+  await form.getByLabel('Рік випуску').selectOption('2015')
 }
 
 test('booking wizard: three steps to success (API mocked)', async ({ page }, info) => {
@@ -65,9 +66,74 @@ test('booking wizard: three steps to success (API mocked)', async ({ page }, inf
   await fillContacts(page)
   await section.getByRole('button', { name: 'Надіслати запит' }).click()
   await expect(page.getByText('Запит надіслано, очікуйте підтвердження')).toBeVisible()
-  expect(body).toMatchObject({ serviceId: 'diagnostics', name: 'Тест Клієнт', phone: '098 123 45 67', carMake: 'BMW', carModel: 'X5' })
+  expect(body).toMatchObject({ serviceId: 'diagnostics', name: 'Тест Клієнт', phone: '098 123 45 67', carMake: 'BMW', carModel: 'X5', carYear: 2015 })
   expect(String(body!.start)).toMatch(/T08:00:00/)
   void info
+})
+
+test('booking wizard: car year is required, listed descending from the current year to 1980', async ({ page }) => {
+  await mockSlots(page)
+  let posted = false
+  await page.route('**/api/bookings', async (route) => {
+    posted = true
+    await route.fulfill({ status: 201, json: { id: 'b1' } })
+  })
+  const { section, slotGroup } = await toSlotStep(page)
+  await slotGroup.getByRole('radio').first().click()
+  await section.getByRole('button', { name: 'Далі' }).click()
+  const form = page.locator('#booking-form')
+  await form.getByLabel("Ім'я").fill('Тест Клієнт')
+  await form.getByLabel('Телефон').fill('098 123 45 67')
+  await form.getByLabel('Марка авто').fill('BMW')
+  await form.getByLabel('Модель').fill('X5')
+  const year = form.getByLabel('Рік випуску')
+  const values = await year.locator('option').evaluateAll((o) => o.map((x) => (x as HTMLOptionElement).value).filter(Boolean))
+  expect(values[values.length - 1]).toBe('1980')
+  expect(Number(values[0])).toBeGreaterThanOrEqual(new Date().getFullYear() - 1)
+  expect(values).toEqual([...values].sort((a, b) => Number(b) - Number(a)))
+  const box = await year.boundingBox()
+  expect(box!.height).toBeGreaterThanOrEqual(44)
+  expect(await year.evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(16)
+  await section.getByRole('button', { name: 'Надіслати запит' }).click()
+  await expect(form.getByText('Вкажіть рік випуску авто')).toBeVisible()
+  await expect(year).toBeFocused()
+  expect(posted).toBe(false)
+})
+
+test('booking wizard: add-to-calendar buttons on the success screen (API mocked)', async ({ page }) => {
+  await mockSlots(page)
+  await page.route('**/api/bookings', (route) => route.fulfill({ status: 201, json: { id: 'b-cal-1' } }))
+  const { section, slotGroup } = await toSlotStep(page)
+  await slotGroup.getByRole('radio').first().click() // 07:00Z
+  await section.getByRole('button', { name: 'Далі' }).click()
+  await fillContacts(page)
+  await section.getByRole('button', { name: 'Надіслати запит' }).click()
+  await expect(page.getByText('Запит надіслано, очікуйте підтвердження')).toBeVisible()
+
+  const google = section.getByRole('link', { name: 'Додати в Google Календар' })
+  const ics = section.getByRole('button', { name: 'Завантажити в календар (.ics)' })
+  await expect(google).toBeVisible()
+  await expect(ics).toBeVisible()
+  expect((await google.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+  expect((await ics.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+
+  await expect(google).toHaveAttribute('target', '_blank')
+  await expect(google).toHaveAttribute('rel', 'noopener noreferrer')
+  const href = new URL((await google.getAttribute('href'))!)
+  expect(href.origin + href.pathname).toBe('https://calendar.google.com/calendar/render')
+  expect(href.searchParams.get('action')).toBe('TEMPLATE')
+  expect(href.searchParams.get('text')).toBe('V12 Service: Діагностика')
+  expect(href.searchParams.get('dates')).toMatch(/^\d{8}T070000Z\/\d{8}T\d{6}Z$/)
+  expect(href.searchParams.get('details')).toContain('Запис очікує підтвердження')
+
+  const [download] = await Promise.all([page.waitForEvent('download'), ics.click()])
+  expect(download.suggestedFilename()).toMatch(/\.ics$/)
+  const path = await download.path()
+  const text = (await import('node:fs')).readFileSync(path, 'utf8')
+  expect(text).toContain('BEGIN:VCALENDAR')
+  expect(text).toContain('UID:b-cal-1@v12-service')
+  expect(text).toContain('DTSTART:')
+  expect(text).toContain('TRIGGER:-PT1H')
 })
 
 test('booking wizard: 409 shows conflict and fresh slots (API mocked)', async ({ page }) => {

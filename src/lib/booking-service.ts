@@ -30,6 +30,7 @@ export type BookingTxArgs = {
   phone: string
   carMake: string
   carModel: string
+  carYear: number | null
   comment: string | null
 }
 export type ConsultationRecord = { name: string; phone: string; question: string | null }
@@ -157,6 +158,7 @@ export async function createBooking(
       phone,
       carMake: input.carMake,
       carModel: input.carModel,
+      carYear: input.carYear,
       comment: input.comment?.trim() ? input.comment.trim() : null,
     }
     try {

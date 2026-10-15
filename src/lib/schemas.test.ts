@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { kyivYear } from './car-year'
 import { bookingInputSchema, consultationInputSchema } from './schemas'
 
 const valid = {
@@ -8,6 +9,7 @@ const valid = {
   phone: '(067) 123-45-67',
   carMake: 'BMW',
   carModel: 'X5',
+  carYear: 2015,
 }
 
 describe('bookingInputSchema', () => {
@@ -18,6 +20,22 @@ describe('bookingInputSchema', () => {
   })
   it('rejects name of length 1', () => {
     expect(bookingInputSchema.safeParse({ ...valid, name: 'І' }).success).toBe(false)
+  })
+  it('requires carYear', () => {
+    const { carYear: _omit, ...rest } = valid
+    void _omit
+    const r = bookingInputSchema.safeParse(rest)
+    expect(r.success).toBe(false)
+    if (!r.success) expect(r.error.issues[0].path[0]).toBe('carYear')
+  })
+  it('rejects out-of-range or non-integer carYear', () => {
+    const next = kyivYear() + 1
+    for (const carYear of [1949, 1800, next + 1, 2015.5, '2015', null]) {
+      expect(bookingInputSchema.safeParse({ ...valid, carYear }).success).toBe(false)
+    }
+    for (const carYear of [1950, 1980, kyivYear(), next]) {
+      expect(bookingInputSchema.safeParse({ ...valid, carYear }).success).toBe(true)
+    }
   })
   it('rejects invalid phone', () => {
     expect(bookingInputSchema.safeParse({ ...valid, phone: '123' }).success).toBe(false)

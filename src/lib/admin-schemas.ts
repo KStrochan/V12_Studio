@@ -33,6 +33,7 @@ const serviceFields = {
 export const serviceCreateSchema = z
   .object({
     ...serviceFields,
+    price_from: serviceFields.price_from.default(0),
     description: serviceFields.description.default(''),
     icon: serviceFields.icon.default('wrench'),
     sort_order: serviceFields.sort_order.default(0),

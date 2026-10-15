@@ -13,6 +13,7 @@ type BookingRow = {
   status: BookingStatus
   car_make: string | null
   car_model: string | null
+  car_year: number | null
   comment: string | null
   source: string
   services: { title: string } | null
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
       const data = await fetchAll<BookingRow>((from, to) =>
         auth.supabase
           .from('bookings')
-        .select('start_at,post_no,status,car_make,car_model,comment,source,services(title),clients(name,phone)')
+        .select('start_at,post_no,status,car_make,car_model,car_year,comment,source,services(title),clients(name,phone)')
         .order('start_at', { ascending: false })
           .order('id')
           .range(from, to)
@@ -45,6 +46,7 @@ export async function GET(request: Request) {
           Клієнт: b.clients?.name ?? null,
           Телефон: b.clients?.phone ?? null,
           Авто: [b.car_make, b.car_model].filter(Boolean).join(' ') || null,
+          'Рік авто': b.car_year,
           Пост: b.post_no,
           Статус: STATUS_LABEL[b.status] ?? b.status,
           Коментар: b.comment,

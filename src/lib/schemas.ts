@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { normalizeUaPhone } from './phone'
+import { DB_MIN_CAR_YEAR, kyivYear } from './car-year'
 
 const name = z
   .string({ message: "Вкажіть ім'я" })
@@ -18,6 +19,15 @@ const phone = z
     return n
   })
 
+const YEAR_MSG = 'Вкажіть рік випуску авто'
+
+/** Integer year 1950..(current Kyiv year + 1); the upper bound is evaluated at parse time. */
+export const carYearSchema = z
+  .number({ message: YEAR_MSG })
+  .int(YEAR_MSG)
+  .min(DB_MIN_CAR_YEAR, 'Невірний рік випуску')
+  .refine((y) => y <= kyivYear() + 1, 'Невірний рік випуску')
+
 const honeypot = z.string().optional()
 
 export const bookingInputSchema = z.object({
@@ -35,6 +45,7 @@ export const bookingInputSchema = z.object({
     .trim()
     .min(1, 'Вкажіть модель авто')
     .max(40, 'Модель занадто довга'),
+  carYear: carYearSchema,
   comment: z.string().max(500, 'Коментар занадто довгий (до 500 символів)').optional(),
   website: honeypot,
 })

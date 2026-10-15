@@ -23,7 +23,7 @@ export default async function HomePage() {
       <Services services={services} />
       <WhyUs />
       <Process />
-      <BookingWizard services={services} workingHours={settings.working_hours} />
+      <BookingWizard services={services} workingHours={settings.working_hours} address={settings.address} phone={settings.phone} />
       <ConsultationForm telegramUrl={telegramUrl} viberUrl={viberUrl} />
       <Reviews reviews={reviews} />
       <Contacts settings={settings} />

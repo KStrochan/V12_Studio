@@ -6,7 +6,6 @@ import { Reveal } from './Reveal'
 const FACTS = [
   { k: 'Гарантія', v: 'на роботи' },
   { k: 'Онлайн-запис', v: 'за 1 хвилину' },
-  { k: 'Чесна ціна', v: 'до початку робіт' },
 ]
 
 export function Hero() {
@@ -36,7 +35,7 @@ export function Hero() {
 
         <Reveal mode="load" delay={0.25}>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-            Діагностика, ходова, двигун, електрика та кузов. Пояснюємо кожну деталь і називаємо ціну до початку робіт.
+            Діагностика, ходова, двигун, електрика та кузов.
           </p>
         </Reveal>
 
@@ -50,7 +49,7 @@ export function Hero() {
         </Reveal>
 
         <Reveal mode="load" delay={0.55}>
-          <dl className="mt-14 grid max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-2xl border border-line bg-line">
+          <dl className="mt-14 grid max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line">
             {FACTS.map((f) => (
               <div key={f.k} className="bg-panel/90 px-3 py-4 sm:px-5">
                 <dt className="chrome-text font-heading text-[0.7rem] font-semibold uppercase tracking-wider sm:text-xs">

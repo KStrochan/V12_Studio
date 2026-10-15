@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { btnPrimaryCls, fieldCls } from '@/components/admin/AdminDialog'
 import { alertCls, sendJson } from '@/components/admin/send'
-import { ICON_NAMES } from '@/lib/admin-schemas'
+import { serviceIcons } from '@/components/icons/ServiceIcons'
 
 export type ServiceRow = {
   id: string | null
@@ -17,6 +17,17 @@ export type ServiceRow = {
   active: boolean
 }
 
+const ICON_LABELS: Record<string, string> = {
+  scan: 'Діагностика',
+  suspension: 'Ходова',
+  oil: 'ТО (масло)',
+  engine: 'Двигун',
+  bolt: 'Електрика',
+  brake: 'Гальма',
+  body: 'Кузов',
+  tire: 'Шиномонтаж',
+}
+
 const labelCls = 'block space-y-1 text-sm text-muted'
 
 function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () => void }) {
@@ -24,7 +35,6 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
   const isNew = initial.id === null
   const [f, setF] = useState({
     ...initial,
-    price_from: String(initial.price_from),
     duration_min: String(initial.duration_min),
     sort_order: String(initial.sort_order),
   })
@@ -44,7 +54,6 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
     const payload = {
       title: f.title,
       description: f.description,
-      price_from: num(f.price_from),
       duration_min: num(f.duration_min),
       icon: f.icon,
       sort_order: num(f.sort_order),
@@ -77,10 +86,6 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
       </label>
       <div className="grid grid-cols-2 gap-3">
         <label className={labelCls}>
-          Ціна від, грн
-          <input className={fieldCls} type="number" inputMode="numeric" min={0} step={1} value={f.price_from} onChange={(e) => set('price_from', e.target.value)} />
-        </label>
-        <label className={labelCls}>
           Тривалість, хв
           <input className={fieldCls} type="number" inputMode="numeric" min={5} step={5} value={f.duration_min} onChange={(e) => set('duration_min', e.target.value)} />
         </label>
@@ -91,9 +96,10 @@ function ServiceForm({ initial, onSaved }: { initial: ServiceRow; onSaved: () =>
         <label className={labelCls}>
           Іконка
           <select className={fieldCls} value={f.icon} onChange={(e) => set('icon', e.target.value)}>
-            {ICON_NAMES.map((n) => (
+            {!(f.icon in serviceIcons) ? <option value={f.icon}>{f.icon} (за замовчуванням)</option> : null}
+            {Object.keys(serviceIcons).map((n) => (
               <option key={n} value={n}>
-                {n}
+                {ICON_LABELS[n] ?? n}
               </option>
             ))}
           </select>
@@ -122,7 +128,7 @@ export function ServicesEditor({ services }: { services: ServiceRow[] }) {
     description: '',
     price_from: 0,
     duration_min: 60,
-    icon: 'wrench',
+    icon: 'scan',
     sort_order: (services.reduce((m, s) => Math.max(m, s.sort_order), 0) || 0) + 10,
     active: true,
   }

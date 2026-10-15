@@ -59,6 +59,7 @@ describe('buildOwnerMessage', () => {
           phone: '+380501234567',
           carMake: 'BMW',
           carModel: 'X5',
+          carYear: 2015,
           comment: null,
         },
       },
@@ -69,6 +70,7 @@ describe('buildOwnerMessage', () => {
     expect(m.text).toContain('Іван')
     expect(m.text).toContain('+380501234567')
     expect(m.text).toContain('BMW X5')
+    expect(m.text).toContain('Рік: 2015')
     expect(m.buttons?.map((b) => b.data)).toEqual(['confirm:abc', 'reject:abc'])
   })
   it('formats consultation without buttons', () => {

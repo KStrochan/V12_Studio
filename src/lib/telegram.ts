@@ -78,6 +78,7 @@ export function buildOwnerMessage(event: NotifyEvent, serviceName: string): Owne
       `Телефон: ${b.phone}`,
       `Авто: ${b.carMake} ${b.carModel}`,
     ]
+    if (b.carYear) lines.push(`Рік: ${b.carYear}`)
     if (b.comment) lines.push(`Коментар: ${b.comment}`)
     return {
       text: lines.join('\n'),

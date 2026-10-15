@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AdminDialog, btnCls, btnPrimaryCls, fieldCls } from '@/components/admin/AdminDialog'
+import { carYearOptions } from '@/lib/car-year'
 import { kyivToIso, type ServiceOption } from '@/lib/admin-bookings-ui'
 
 export function ManualBookingDialog({
@@ -31,6 +32,7 @@ export function ManualBookingDialog({
       phone: f.get('phone'),
       carMake: f.get('carMake'),
       carModel: f.get('carModel'),
+      ...(f.get('carYear') ? { carYear: Number(f.get('carYear')) } : {}),
       comment: f.get('comment'),
       ...(post ? { postNo: Number(post) } : {}),
     }
@@ -119,6 +121,18 @@ export function ManualBookingDialog({
             <input name="carModel" className={fieldCls} />
           </label>
         </div>
+        <label className="block text-sm">
+          Рік випуску (необов’язково)
+          <select name="carYear" className={fieldCls} defaultValue="">
+            <option value="">Не вказано</option>
+            {carYearOptions().map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+          {err('carYear')}
+        </label>
         <label className="block text-sm">
           Коментар
           <textarea name="comment" rows={2} className={`${fieldCls} py-2`} />

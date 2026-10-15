@@ -14,6 +14,7 @@ const payload = (over: Record<string, unknown> = {}) => ({
   phone: '050 111 22 33',
   carMake: 'Audi',
   carModel: 'A4',
+  carYear: 2015,
   ...over,
 })
 

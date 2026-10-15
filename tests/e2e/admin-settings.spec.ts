@@ -10,7 +10,7 @@ const kyivDay = (offsetDays: number) =>
     new Date(Date.now() + offsetDays * 86_400_000),
   )
 
-test('admin settings: service price shows on the public page; a day off empties slots; CSV export', async ({ page }) => {
+test('admin settings: service edit shows on the public page; a day off empties slots; CSV export', async ({ page }) => {
   test.skip(!live, 'needs real Supabase env')
   const db = createClient(url as string, service as string, { auth: { persistSession: false } })
   const stamp = Date.now()
@@ -39,15 +39,15 @@ test('admin settings: service price shows on the public page; a day off empties 
     await page.getByRole('button', { name: 'Увійти' }).click()
     await expect(page).toHaveURL(/\/admin$/)
 
-    // change the price -> visible on the public page
+    // change the description -> visible on the public page
     await page.goto('/admin/services')
     const card = page.locator(`[data-service-id="${svc!.id}"]`)
-    await card.getByLabel('Ціна від, грн').fill('777')
+    await card.getByLabel('Опис').fill('e2e-оновлено-777')
     await card.getByRole('button', { name: 'Зберегти' }).click()
     await expect(card.getByRole('status')).toHaveText('Збережено')
     await page.goto('/')
     const pub = page.locator('li, article').filter({ hasText: title }).first()
-    await expect(pub).toContainText('777')
+    await expect(pub).toContainText('e2e-оновлено-777')
 
     // day off tomorrow -> no slots
     await page.goto('/admin/settings')

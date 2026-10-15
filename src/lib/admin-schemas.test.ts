@@ -40,6 +40,7 @@ describe('admin schemas', () => {
   it('service create/patch', () => {
     const ok = serviceCreateSchema.parse({ title: 'Діагностика', price_from: 500, duration_min: 60 })
     expect(ok).toMatchObject({ icon: 'wrench', active: true, sort_order: 0 })
+    expect(serviceCreateSchema.parse({ title: 'Діагностика', duration_min: 60 }).price_from).toBe(0)
     expect(serviceCreateSchema.safeParse({ title: 'Д', price_from: 1, duration_min: 60 }).success).toBe(false)
     expect(servicePatchSchema.safeParse({}).success).toBe(false)
     expect(servicePatchSchema.safeParse({ price_from: -1 }).success).toBe(false)
