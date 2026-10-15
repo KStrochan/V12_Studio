@@ -1,10 +1,9 @@
 import { callHref, formatHours, type SiteSettings } from '@/lib/content'
+import { googleDirectionsUrl, googleEmbedUrl } from '@/lib/location'
 import { Reveal } from './Reveal'
 import { SectionHeading } from './SectionHeading'
 
 export function Contacts({ settings }: { settings: SiteSettings }) {
-  const query = settings.address.includes('…') ? 'Стрий, Україна' : `${settings.address}, Стрий`
-  const q = encodeURIComponent(query)
   const tel = callHref(settings.phone)
   return (
     <section id="contacts" className="scroll-mt-20 border-t border-line px-4 py-20 sm:px-6 lg:py-28">
@@ -16,12 +15,12 @@ export function Contacts({ settings }: { settings: SiteSettings }) {
               <p className="font-heading text-xs uppercase tracking-[0.2em] text-white/60">Адреса</p>
               <p className="mt-2 text-white">{settings.address}</p>
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${q}`}
+                href={googleDirectionsUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 inline-flex min-h-11 items-center text-sm text-white/70 underline underline-offset-4"
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-line bg-panel-2 px-5 font-heading text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
               >
-                Відкрити в Google Maps
+                Побудувати маршрут
               </a>
             </div>
             <div>
@@ -46,7 +45,7 @@ export function Contacts({ settings }: { settings: SiteSettings }) {
           <Reveal delay={0.1} className="overflow-hidden rounded-2xl border border-line bg-panel">
             <iframe
               title="Мапа: V12 Service, Стрий"
-              src={`https://www.google.com/maps?q=${q}&output=embed`}
+              src={googleEmbedUrl()}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="h-72 w-full border-0 grayscale invert-[0.92] contrast-90 lg:h-full lg:min-h-80"

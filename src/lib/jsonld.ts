@@ -1,5 +1,6 @@
 import { normalizeUaPhone } from './phone'
 import type { SiteSettings } from './content'
+import { BUSINESS_LOCATION, googlePlaceUrl } from './location'
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -45,6 +46,8 @@ export function localBusinessJsonLd(settings: SiteSettings): object {
       addressLocality: 'Стрий',
       addressCountry: 'UA',
     },
+    geo: { '@type': 'GeoCoordinates', latitude: BUSINESS_LOCATION.lat, longitude: BUSINESS_LOCATION.lng },
+    hasMap: googlePlaceUrl(),
     openingHoursSpecification: [...groups].map(([key, dayOfWeek]) => {
       const [opens, closes] = key.split('-')
       return { '@type': 'OpeningHoursSpecification', dayOfWeek, opens, closes }
