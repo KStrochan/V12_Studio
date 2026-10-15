@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/cn'
 import type { Slot } from './useSlots'
 import { formatTime, type Day } from './dates'
@@ -22,15 +23,27 @@ type Props = {
 export function StepSlot({ days, date, disabledDays, onDate, slots, loading, error, onRetry, slot, onSlot, notice }: Props) {
   const starts = Array.from(new Set(slots.map((s) => s.start))).sort()
   const tabDay = days.find((d) => d.iso === date && !disabledDays.has(d.iso))?.iso ?? days.find((d) => !disabledDays.has(d.iso))?.iso
+  const stripRef = useRef<HTMLDivElement>(null)
   const tabSlot = starts.includes(slot ?? '') ? slot : starts[0]
 
+  // keep the chosen day visible inside its own scroller (never scrolls the page)
+  useEffect(() => {
+    const strip = stripRef.current
+    const el = strip?.querySelector<HTMLElement>('[aria-checked="true"]')
+    if (!strip || !el) return
+    const left = el.offsetLeft - (strip.clientWidth - el.offsetWidth) / 2
+    strip.scrollTo({ left: Math.max(0, left) })
+  }, [date, days.length])
+
   return (
-    <div>
+    <div className="min-w-0">
       <div
+        ref={stripRef}
+        data-testid="booking-days"
         role="radiogroup"
         aria-labelledby="booking-step-title"
         onKeyDown={(e) => radioKeyDown(e, false)}
-        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] lg:mx-0 lg:flex-wrap lg:px-0"
+        className="-mx-4 flex max-w-[calc(100%+2rem)] snap-x snap-proximity scroll-px-4 gap-2 overflow-x-auto overscroll-x-contain px-4 py-1 [mask-image:linear-gradient(to_right,#000_calc(100%-1rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:max-w-none lg:flex-wrap lg:overflow-visible lg:px-0 lg:[mask-image:none]"
       >
         {days.map((d) => {
           const off = disabledDays.has(d.iso)
@@ -47,7 +60,7 @@ export function StepSlot({ days, date, disabledDays, onDate, slots, loading, err
               data-date={d.iso}
               onClick={() => onDate(d.iso)}
               className={cn(
-                'flex min-h-16 min-w-14 shrink-0 flex-col items-center justify-center rounded-xl border px-2 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
+                'flex min-h-16 min-w-14 shrink-0 snap-start flex-col items-center justify-center rounded-xl border px-2 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
                 checked ? 'border-white/70 bg-panel-2' : 'border-line bg-bg',
                 off ? 'cursor-not-allowed text-white/25 line-through' : 'hover:border-white/30',
               )}
