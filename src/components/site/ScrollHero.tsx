@@ -24,7 +24,7 @@ const BEATS: { start: number; end: number; align: 'left' | 'right' | 'center'; n
     end: 0.5,
     align: 'right',
     node: (
-      <p className="font-heading text-[clamp(2.4rem,8vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.04em]">
+      <p className="font-heading text-[clamp(1.6rem,8.4vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.04em]">
         <ChromeText>Діагностика.</ChromeText>
       </p>
     ),
@@ -34,7 +34,7 @@ const BEATS: { start: number; end: number; align: 'left' | 'right' | 'center'; n
     end: 0.66,
     align: 'left',
     node: (
-      <p className="font-heading text-[clamp(2.4rem,8vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.04em]">
+      <p className="font-heading text-[clamp(1.6rem,8.4vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.04em]">
         Ходова.
         <br />
         <ChromeText>Двигун.</ChromeText>
@@ -46,7 +46,7 @@ const BEATS: { start: number; end: number; align: 'left' | 'right' | 'center'; n
     end: 0.8,
     align: 'right',
     node: (
-      <p className="font-heading text-[clamp(2.4rem,8vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.04em]">
+      <p className="font-heading text-[clamp(1.6rem,8.4vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.04em]">
         Електрика.
         <br />
         <ChromeText>Кузов.</ChromeText>
