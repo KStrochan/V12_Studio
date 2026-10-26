@@ -31,3 +31,7 @@ node scripts/hero-frames.mjs path/to/hero.mp4
 - Тексти і моменти їх появи — масив `BEATS` у `src/components/site/ScrollHero.tsx` (`start`/`end` — частка прокрутки від 0 до 1).
 - Довжина прокрутки — клас `h-[360svh] lg:h-[420svh]` на секції.
 - Повернутися до фото-версії: `HERO_SEQUENCE = null` і видалити `public/hero-seq`.
+
+## Поточне відео
+
+Зараз стоїть стокове відео «A man in a garage with a car in the background» від cottonbro studio з Pexels: https://www.pexels.com/video/a-man-in-a-garage-with-a-car-in-the-background-4488715/ (Pexels License: безкоштовно, зокрема комерційно, без обов'язкової атрибуції; перевірено 2026-10-26). Використано перші 18 секунд. Це ілюстрація, а не зйомка реального сервісу; на задньому плані видно старі рекламні таблички. Коли з'явиться власне відео, просто прожени його через скрипт.
