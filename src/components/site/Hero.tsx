@@ -4,6 +4,8 @@ import { CtaLink } from './CtaLink'
 import { GearsBackdrop } from './GearsBackdrop'
 import { ChromeText } from "./ChromeText"
 import { Reveal } from './Reveal'
+import { ScrollHero } from './ScrollHero'
+import { HERO_SEQUENCE } from '@/lib/heroSequence'
 
 const FACTS = [
   { k: 'Гарантія', v: 'на роботи' },
@@ -11,6 +13,8 @@ const FACTS = [
 ]
 
 export function Hero() {
+  // Scroll-driven video version once frames exist (docs/HERO-VIDEO.md); otherwise the photo hero below.
+  if (HERO_SEQUENCE) return <ScrollHero sequence={HERO_SEQUENCE} facts={FACTS} />
   const photo = getHeroPhoto()
   return (
     <section id="top" className="relative isolate overflow-hidden px-4 pb-24 pt-28 sm:px-6 lg:pb-32 lg:pt-40">
